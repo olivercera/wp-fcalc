@@ -16,13 +16,14 @@ function create_dato_anual() {
 				'name' => __( 'Dato Anual' ),
 				'singular_name' => __( 'Dato Anual' )
 			),
-            'supports' => array( 'title' ),
+            'supports' => array( 'title', 'page-attributes' ),
             'exclude_from_search' => true,
             'show_ui'             => true,
 	        'show_in_menu'        => true,
 	        'show_in_nav_menus'   => false,
 	        'show_in_admin_bar'   => true,
-	        'menu_position'       => 5,
+			'menu_position'       => 5,
+			'hierarchical' => true,
 			'public' => false,
 			'has_archive' => false,
 			'rewrite' => array('slug' => 'dato_anual'),
@@ -77,8 +78,8 @@ function get_dato_anual(){
 
 			if( count( $result ) > 0 ){
 				foreach( $result_d as $post ){
-					$fields = get_fields($post->ID);
-					$dividendos[$post->post_title] = $fields['multiplicador_dividendo']; 
+					$fields_2 = get_fields($post->ID);
+					$dividendos[$post->post_title] = $fields_2['multiplicador_dividendo']; 
 				}
 			}
 

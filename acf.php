@@ -287,6 +287,11 @@ acf_add_local_field_group(array (
 				'operator' => '==',
 				'value' => 'dato_anual',
 			),
+			array (
+				'param' => 'page_type',
+				'operator' => '==',
+				'value' => 'child',
+			),
 		),
 	),
 	'menu_order' => 0,
