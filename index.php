@@ -41,10 +41,13 @@ function fcalc_shortcode(){
 
 add_action( 'wp_ajax_get_dato_anual', 'get_dato_anual' );
 add_action( 'wp_ajax_nopriv_get_dato_anual', 'get_dato_anual' );
+ 
 
 function get_dato_anual(){
-
+	 
+	  
 	if(isset($_POST['tiempo'])){
+		$empresa = (int) $_POST['empresa'];
 		$tiempo = (int) $_POST['tiempo'];
 		$ano_buscar = date('Y') - $tiempo;
 		$ano_actual = date('Y');
@@ -57,19 +60,21 @@ function get_dato_anual(){
 		$result = query_posts(
 			array(
 				'post_type' => 'dato_anual',
-				'title' => $ano_buscar,
+				'post_title' => $ano_buscar, 
+				'post_parent' => $empresa, 
 				'posts_per_page' => 1
 			)
 		);
 
-		if( count( $result ) > 0 ){
+		if( count( $result )> 0 ){
 			$post = $result[0];
 			$fields = get_fields($post->ID);
 			
 			$result_d = query_posts(
 				array(
 					'post_type' => 'dato_anual',
-					'title__in' => $ano_rango,
+					'post_title' => $ano_rango,
+					'post_parent' => $empresa,
 					'posts_per_page' => -1
 				)
 			);
@@ -89,6 +94,7 @@ function get_dato_anual(){
 					'ano_actual' => $ano_actual,
 					'ano_buscar' => $ano_buscar,
 					'valores' => $fields,
+					'empresa' => $empresa,
 					'dividendos' => $dividendos
 				]
 			);

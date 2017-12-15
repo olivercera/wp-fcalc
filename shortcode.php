@@ -1,9 +1,27 @@
-    <div class="panel panel-default">
+<div class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading">Calculadora Financiera</div>
         <div class="panel-body">
 
             <form class="form-horizontal" id="calc_form">
+                <div class="form-group">
+                    <label for="calc_monto" class="col-sm-2 control-label">Empresa</label>
+                    <div class="col-sm-10">
+                    
+					 
+								<select  class="form-control"  name="calc_empresa"  id="calc_empresa" required>
+                                	 <option value="0">Seleccionar</option>
+								 <?
+                                 global $post;
+                                 $args = array(   'post_type'=>'dato_anual', 'post_parent'=>0);
+                                 $posts = get_posts($args);
+                                 foreach( $posts as $post ) : setup_postdata($post); ?>
+                                                <option value="<? echo $post->ID; ?>"><?php the_title(); ?></option>
+                                 <? endforeach; ?>
+                                 </select>
+							 
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="calc_monto" class="col-sm-2 control-label">Monto</label>
                     <div class="col-sm-10">
@@ -35,9 +53,8 @@
         <table id="calc_tabla" class="resultados table table-striped" style="display:none;">
             <thead>
                 <tr>
-                    <th>Año</th>
-                    <th>Multiplicador Dividendo</th>
-                    <th>Dinero</th>
+                    <th style="width:50%">Año</th> 
+                    <th style="width:50%">Dinero</th>
                 </tr>
             </thead>
             <tbody>        
@@ -47,6 +64,7 @@
 
 <?php 
     echo '<script type="text/javascript"> var ajaxurl = "' . admin_url('admin-ajax.php') . '";   </script>';
+ 
 ?>
 
 <script>
@@ -64,35 +82,37 @@
                 
                 var monto = $('#calc_monto').val();
                 var tiempo = $('#calc_tiempo').val();
-
+				var empresa = $('#calc_empresa').val();
+				 
                 var data = {
                     'action': 'get_dato_anual',
-                    'tiempo': tiempo
+                    'empresa': empresa,
+					'tiempo': tiempo
                 };
 
                 $.post(ajaxurl, data, function(response) {
 
                     if(response.exitoso){
 
-                        var d = new Date();
+                        var d = new Date(); 
                         var n = d.getMonth() + 1;
                         var promedio_mes = response.valores[ 'mes_' + n ];
-
+						
                         var acciones =  Math.floor( monto / promedio_mes );
                         $('#calc_costo_accion').html(parseFloat(promedio_mes).toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
                         $('#calc_cantidad').html(acciones);
                         var tabla = "";
                         var dividendo = 0;
                         var monto_ano = 0;
-                        var total = 0;
+                        var total = 0; 
                         for( i= response.ano_buscar; i <= response.ano_actual; i++ ){
                             dividendo = response.dividendos[i];
                             monto_ano = acciones * dividendo;
                             total += monto_ano;
-                            tabla += "<tr> <td>"+i+"</td> <td>"+dividendo+"</td> <td>"+monto_ano.toLocaleString('en-US', { style: 'currency', currency: 'USD' })+"</td> </tr>";
+                            tabla += "<tr> <td>"+i+"</td><td>"+monto_ano.toLocaleString('en-US', { style: 'currency', currency: 'USD' })+"</td> </tr>";
                         }
 
-                        tabla += "<tr> <td colspan='2'> Total </td> <td>"+total.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) +"</td> </tr>";
+                        tabla += "<tr> <td  > Total </td> <td>"+total.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) +"</td> </tr>";
 
                         $('#calc_tabla tbody').html(tabla);
                         $('.resultados').fadeIn();
